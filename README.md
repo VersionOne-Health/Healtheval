@@ -10,11 +10,29 @@ to catch them.
 This is not a validated clinical safety system. It is a **framework for healthcare AI
 engineering teams to build their own clinical evaluators**.
 
-## Live Demo
-
 🚀 Try the live demo:
 
 https://healtheval-versionone.streamlit.app/
+
+![Dashboard](docs/images/Dashboard.png)
+
+## Why HealthEval?
+
+HealthEval is an open-source framework for evaluating healthcare AI systems across coding accuracy, clinical reasoning, safety, compliance, and operational performance.
+
+## Screenshots
+
+### Dashboard
+
+![Dashboard](docs/images/Dashboard.png)
+
+### Evaluation Results
+
+![Results](docs/images/Results-Screen.png)
+
+### Revenue Cycle Management Analysis
+
+![RCM Results](docs/images/Results-Screen-RCM.png)
 
 ---
 
