@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "healtheval"
+version = "0.1.0"
+description = "Open-source clinical failure mode library and eval framework for healthcare AI agents"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.9"
+keywords = ["healthcare", "ai", "llm", "evaluation", "clinical", "observability", "patient-safety"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = [
+    "anthropic>=0.25.0",
+    "pyyaml>=6.0",
+    "click>=8.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "pytest-mock>=3.0",
+]
+ui = [
+    "streamlit>=1.30.0",
+]
+all = [
+    "streamlit>=1.30.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "pytest-mock>=3.0",
+]
+
+[project.scripts]
+healtheval = "healtheval.cli:cli"
+
+[project.urls]
+Homepage = "https://github.com/versionone-health/healtheval"
+Documentation = "https://versionone-health.github.io/healtheval"
+Repository = "https://github.com/versionone-health/healtheval"
+Issues = "https://github.com/versionone-health/healtheval/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["healtheval*"]
+
+[tool.setuptools.package-data]
+healtheval = ["*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["healtheval"]
+omit = ["tests/*", "examples/*"]

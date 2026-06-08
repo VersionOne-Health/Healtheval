@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>healtheval — Clinical AI Eval Framework</title>
+  <meta name="description" content="Open-source clinical failure mode library and eval framework for healthcare AI agents."/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0f0d;--bg2:#111a15;--bg3:#172010;--border:#1e3020;--green:#2ef77b;--green-dim:#1a8f47;--green-mute:#0d4022;--red:#f74a2e;--orange:#f7932e;--text:#c8d8c0;--text-dim:#6a8a6a;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif}
+    body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.7}
+    nav{position:sticky;top:0;z-index:100;background:rgba(10,15,13,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:56px}
+    .nav-brand{font-family:var(--mono);font-size:0.95rem;color:var(--green);text-decoration:none}
+    .nav-links{display:flex;gap:2rem;list-style:none}
+    .nav-links a{color:var(--text-dim);text-decoration:none;font-size:0.875rem}
+    .nav-links a:hover{color:var(--green)}
+    .container{max-width:900px;margin:0 auto;padding:0 2rem}
+    .hero{padding:7rem 0 5rem;border-bottom:1px solid var(--border)}
+    .badge{display:inline-block;font-family:var(--mono);font-size:0.7rem;color:var(--green);background:var(--green-mute);border:1px solid var(--green-dim);padding:0.25rem 0.75rem;border-radius:2px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2rem}
+    h1{font-family:var(--mono);font-size:clamp(2rem,5vw,3.2rem);font-weight:500;line-height:1.1;letter-spacing:-0.04em;color:#e8f4e8;margin-bottom:1.5rem}
+    h1 span{color:var(--green)}
+    .hero-sub{font-size:1.1rem;color:var(--text-dim);max-width:600px;margin-bottom:3rem}
+    .hero-ctas{display:flex;gap:1rem;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;padding:0.75rem 1.5rem;font-family:var(--mono);font-size:0.85rem;text-decoration:none;border-radius:3px;transition:all 0.2s}
+    .btn-primary{background:var(--green);color:#0a0f0d;font-weight:500}
+    .btn-primary:hover{background:#4dff93}
+    .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+    .btn-ghost:hover{border-color:var(--green-dim);color:var(--green)}
+    .install{margin-top:3rem;padding:1.25rem 1.5rem;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:4px;display:flex;align-items:center;gap:1rem}
+    .install code{font-family:var(--mono);font-size:0.9rem;color:var(--green)}
+    .install .label{font-size:0.75rem;color:var(--text-dim);white-space:nowrap}
+    section{padding:5rem 0;border-bottom:1px solid var(--border)}
+    h2{font-family:var(--mono);font-size:1.5rem;font-weight:500;color:#e8f4e8;margin-bottom:0.5rem}
+    .section-sub{color:var(--text-dim);margin-bottom:3rem;font-size:0.95rem}
+    .fm-table{width:100%;border-collapse:collapse;font-size:0.875rem}
+    .fm-table th{text-align:left;padding:0.75rem 1rem;font-family:var(--mono);font-size:0.75rem;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border)}
+    .fm-table td{padding:0.85rem 1rem;border-bottom:1px solid rgba(30,48,32,0.5)}
+    .fm-table tr:hover td{background:var(--bg2)}
+    .fm-id{font-family:var(--mono);font-size:0.8rem;color:var(--green)}
+    .fm-name{font-weight:500;color:#e8f4e8}
+    .fm-cat{font-size:0.8rem;color:var(--text-dim)}
+    .sev{display:inline-block;font-family:var(--mono);font-size:0.7rem;padding:0.2rem 0.5rem;border-radius:2px;text-transform:uppercase}
+    .sev-critical{background:rgba(247,74,46,0.15);color:var(--red);border:1px solid rgba(247,74,46,0.3)}
+    .sev-high{background:rgba(247,147,46,0.15);color:var(--orange);border:1px solid rgba(247,147,46,0.3)}
+    .principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem}
+    .principle{padding:1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:4px}
+    .principle-num{font-family:var(--mono);font-size:0.75rem;color:var(--green-dim);margin-bottom:0.75rem}
+    .principle h3{font-size:1rem;color:#e8f4e8;margin-bottom:0.5rem}
+    .principle p{font-size:0.875rem;color:var(--text-dim)}
+    footer{padding:3rem 0;text-align:center;font-size:0.85rem;color:var(--text-dim)}
+    footer a{color:var(--green-dim);text-decoration:none}
+    .footer-logo{font-family:var(--mono);font-size:1.1rem;color:var(--green);margin-bottom:0.5rem}
+    @media(max-width:640px){.hero{padding:4rem 0 3rem}.nav-links{display:none}.hero-ctas{flex-direction:column}}
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="#">healtheval</a>
+  <ul class="nav-links">
+    <li><a href="#failure-modes">Failure Modes</a></li>
+    <li><a href="#quickstart">Quickstart</a></li>
+    <li><a href="https://github.com/versionone-health/healtheval" target="_blank">GitHub ↗</a></li>
+  </ul>
+</nav>
+<div class="hero"><div class="container">
+  <div class="badge">v0.1 · Apache 2.0 · Open Source</div>
+  <h1>Clinical failure modes<br/>for <span>healthcare AI</span> agents.</h1>
+  <p class="hero-sub">Healthcare AI agents fail differently than general AI. A hallucinated medication status, a misrouted prior auth, a fabricated CPT code — these are patient safety issues. healtheval gives you named failure modes and the infrastructure to catch them.</p>
+  <div class="hero-ctas">
+    <a class="btn btn-primary" href="https://github.com/versionone-health/healtheval" target="_blank">View on GitHub</a>
+    <a class="btn btn-ghost" href="#quickstart">Quickstart →</a>
+  </div>
+  <div class="install"><span class="label">Install</span><code>pip install healtheval</code></div>
+</div></div>
+<section id="failure-modes"><div class="container">
+  <h2>v0.1 Failure Mode Library</h2>
+  <p class="section-sub">10 named failure modes across 4 agent categories.</p>
+  <table class="fm-table">
+    <thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Severity</th></tr></thead>
+    <tbody>
+      <tr><td class="fm-id">SCRIBE-001</td><td class="fm-name">Treatment Status Hallucination</td><td class="fm-cat">Scribe</td><td><span class="sev sev-critical">Critical</span></td></tr>
+      <tr><td class="fm-id">SCRIBE-002</td><td class="fm-name">Prior Visit Note Bleed</td><td class="fm-cat">Scribe</td><td><span class="sev sev-high">High</span></td></tr>
+      <tr><td class="fm-id">SCRIBE-003</td><td class="fm-name">Fabricated Vitals</td><td class="fm-cat">Scribe</td><td><span class="sev sev-critical">Critical</span></td></tr>
+      <tr><td class="fm-id">SCRIBE-004</td><td class="fm-name">Symptom Negation Flip</td><td class="fm-cat">Scribe</td><td><span class="sev sev-critical">Critical</span></td></tr>
+      <tr><td class="fm-id">RCM-001</td><td class="fm-name">CPT Code Hallucination</td><td class="fm-cat">RCM</td><td><span class="sev sev-high">High</span></td></tr>
+      <tr><td class="fm-id">RCM-002</td><td class="fm-name">Denial Reason Fabrication</td><td class="fm-cat">RCM</td><td><span class="sev sev-high">High</span></td></tr>
+      <tr><td class="fm-id">REFILL-001</td><td class="fm-name">Formulary Non-Adherence Approval</td><td class="fm-cat">Refill Voice</td><td><span class="sev sev-critical">Critical</span></td></tr>
+      <tr><td class="fm-id">REFILL-002</td><td class="fm-name">Controlled Substance Misclassification</td><td class="fm-cat">Refill Voice</td><td><span class="sev sev-critical">Critical</span></td></tr>
+      <tr><td class="fm-id">FAXROUTE-001</td><td class="fm-name">Provider Identity Mismatch</td><td class="fm-cat">Fax Routing</td><td><span class="sev sev-high">High</span></td></tr>
+      <tr><td class="fm-id">PRIORAUTH-001</td><td class="fm-name">Criteria Hallucination</td><td class="fm-cat">Prior Auth</td><td><span class="sev sev-high">High</span></td></tr>
+    </tbody>
+  </table>
+</div></section>
+<section id="quickstart"><div class="container">
+  <h2>Quickstart</h2>
+  <p class="section-sub">No API key needed for deterministic checks.</p>
+  <pre style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1.5rem;font-family:var(--mono);font-size:0.85rem;overflow-x:auto">from healtheval import run_eval
+
+result = run_eval(
+    "SCRIBE-001",
+    run_llm=False,
+    context="Metformin was discontinued on 2024-11-14.",
+    agent_output="Patient is currently on metformin 500mg twice daily.",
+)
+
+print(result.final_verdict)  # FAIL
+print(result.failed)         # True</pre>
+</div></section>
+<section id="principles"><div class="container">
+  <h2>Design Principles</h2>
+  <p class="section-sub">Six decisions that shape everything in healtheval.</p>
+  <div class="principles">
+    <div class="principle"><div class="principle-num">01</div><h3>Deterministic first</h3><p>Rules before LLMs. LLM reserved for semantic failures only.</p></div>
+    <div class="principle"><div class="principle-num">02</div><h3>Named failure modes</h3><p>"Treatment Status Hallucination" beats "hallucination score 0.87".</p></div>
+    <div class="principle"><div class="principle-num">03</div><h3>No PHI, ever</h3><p>All examples synthetic. No real patient data anywhere in the library.</p></div>
+    <div class="principle"><div class="principle-num">04</div><h3>Framework-agnostic</h3><p>Works with any LLM, any agent framework, any observability layer.</p></div>
+    <div class="principle"><div class="principle-num">05</div><h3>Severity is clinical</h3><p>Ratings reflect patient harm potential, not occurrence frequency.</p></div>
+    <div class="principle"><div class="principle-num">06</div><h3>Framework, not validator</h3><p>An engineering tool. Not a certified clinical safety system.</p></div>
+  </div>
+</div></section>
+<footer><div class="container">
+  <div class="footer-logo">healtheval</div>
+  <p>Built by <a href="https://versionone.health" target="_blank">versionone.health</a> &middot; Apache 2.0 License</p>
+  <p style="margin-top:0.5rem"><a href="https://github.com/versionone-health/healtheval" target="_blank">GitHub</a> &middot; <a href="https://github.com/versionone-health/healtheval/issues" target="_blank">Issues</a> &middot; <a href="https://github.com/versionone-health/healtheval/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a></p>
+  <p style="margin-top:1.5rem;font-size:0.75rem;opacity:0.5">Not a certified clinical safety system. Not a HIPAA compliance tool. An engineering tool for healthcare AI teams.</p>
+</div></footer>
+</body></html>

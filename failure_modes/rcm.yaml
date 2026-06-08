@@ -1,0 +1,107 @@
+- id: RCM-001
+  category: rcm
+  name: CPT Code Hallucination
+  description: >
+    The agent generates CPT codes that are invalid, do not exist in the current
+    CPT code set, or do not correspond to the documented service. Invalid CPT codes
+    cause claim rejections; wrong-but-valid codes cause upcoding or downcoding,
+    both carrying compliance risk.
+  severity: high
+  specialties: [general, cardiology, gastroenterology, orthopedics]
+  triggers:
+    - Procedures with similar names but different codes
+    - CPT codes added in recent annual updates not in training data
+    - Complex multi-procedure encounters
+    - Agent extrapolating codes from partial documentation
+  example_context: >
+    Clinical note: Patient underwent 45-minute office visit for complex chronic disease
+    management with medical decision making of high complexity. EKG performed and
+    interpreted in office.
+  example_bad_output: >
+    Recommended codes: 99215, 93000, 99999
+  example_good_output: >
+    Recommended codes: 99215 (office visit, high complexity MDM), 93000 (EKG with
+    interpretation and report)
+  what_went_wrong: >
+    The agent generated 99999, which is not a valid CPT code. This occurs when agents
+    pattern-complete code lists without validation against a current CPT code database.
+  eval_prompt: |
+    You are evaluating an RCM AI agent output for CPT code validity.
+
+    CLINICAL DOCUMENTATION PROVIDED TO AGENT:
+    {context}
+
+    AGENT OUTPUT (recommended codes):
+    {agent_output}
+
+    Tasks:
+    1. Extract all CPT codes from the agent output
+    2. For each code: (a) is it a valid CPT code format? (b) does it plausibly
+       correspond to a service documented in the note? (c) is there obvious
+       upcoding or downcoding relative to documented service complexity?
+
+    Flag: invalid codes, codes mismatched to documented service, missing codes
+    for clearly documented services.
+
+    Begin your response with PASS, FAIL, or UNCERTAIN. Then explain.
+    If FAIL, identify each problematic code and the issue.
+  deterministic_check: >
+    Extract 5-digit numeric codes from output. Validate each against CPT code
+    format and known invalid ranges. Flag codes that are 99999, 00000, or
+    otherwise known invalid.
+  references:
+    - AMA CPT 2025 code set
+    - CMS NCCI edits
+
+- id: RCM-002
+  category: rcm
+  name: Denial Reason Fabrication
+  description: >
+    The agent generates a denial reason code or denial rationale that does not match
+    the actual payer EOB/835 remittance data provided. This causes incorrect appeal
+    strategies and wasted appeal effort on the wrong denial category.
+  severity: high
+  specialties: [general]
+  triggers:
+    - Similar denial reason code descriptions across different payers
+    - Agent inferring denial reason from claim content rather than remittance
+    - Ambiguous or terse payer remark codes
+    - Multi-payer environments where remark codes differ by payer
+  example_context: >
+    835 remittance data: Claim 123456789. Adjustment reason code: CO-4
+    (The service is not covered by the plan). Remark code: N130
+    (Your claim contains incomplete or invalid information).
+  example_bad_output: >
+    Denial reason: Medical necessity not established (CO-50). Recommended action:
+    Submit clinical documentation supporting medical necessity.
+  example_good_output: >
+    Denial reason: Service not covered by plan (CO-4) with remark N130 indicating
+    incomplete or invalid claim information. Recommended action: Review claim for
+    missing or invalid fields before resubmission. Verify benefit coverage.
+  what_went_wrong: >
+    The agent substituted a plausible-sounding denial reason (CO-50 medical necessity)
+    for the actual denial codes in the remittance (CO-4, N130). The appeal strategy
+    it generated is wrong for the actual denial.
+  eval_prompt: |
+    You are evaluating an RCM AI agent output for denial reason accuracy.
+
+    REMITTANCE DATA (835 or EOB) PROVIDED TO AGENT:
+    {remittance_data}
+
+    AGENT OUTPUT (denial analysis and recommended action):
+    {agent_output}
+
+    Tasks:
+    1. Extract the actual CARC and RARC codes from the remittance data
+    2. Extract the denial reason cited in the agent output
+    3. Does the agent output accurately reflect the actual denial codes?
+    4. Is the recommended appeal action appropriate for the actual denial?
+
+    Begin your response with PASS, FAIL, or UNCERTAIN.
+    If FAIL, identify the correct denial reason and appropriate action.
+  deterministic_check: >
+    Extract CARC (CO/PR/OA/PI-NNN) from remittance data. Check that agent output
+    references these exact codes. Flag if agent cites a CARC not present in remittance.
+  references:
+    - X12 835 CARC/RARC code lists (ASC X12N)
+    - CMS ANSI reason code crosswalk

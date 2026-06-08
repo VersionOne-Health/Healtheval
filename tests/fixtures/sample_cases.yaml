@@ -1,0 +1,142 @@
+# Synthetic test cases — no PHI. All examples fabricated for testing purposes.
+
+- failure_mode_id: SCRIBE-001
+  name: discontinued_med_active_FAIL
+  inputs:
+    context: "Metformin 500mg was discontinued on 2024-11-14 due to GI intolerance."
+    agent_output: "Patient is currently on metformin 500mg twice daily for type 2 diabetes."
+  expected_verdict: FAIL
+
+- failure_mode_id: SCRIBE-001
+  name: correctly_documented_discontinuation_PASS
+  inputs:
+    context: "Metformin 500mg was discontinued on 2024-11-14 due to GI intolerance."
+    agent_output: "Metformin was discontinued November 2024 due to GI intolerance. Patient is no longer on metformin."
+  expected_verdict: PASS
+
+- failure_mode_id: SCRIBE-001
+  name: no_context_UNCERTAIN
+  inputs:
+    context: ""
+    agent_output: "Patient is on lisinopril 10mg daily."
+  expected_verdict: UNCERTAIN
+
+- failure_mode_id: SCRIBE-002
+  name: high_overlap_FAIL
+  inputs:
+    prior_context: "Assessment: Stable GERD. Plan: Continue PPI therapy. Follow up in 6 weeks. Referred to GI for colonoscopy evaluation."
+    agent_output: "Assessment: Stable GERD. Plan: Continue PPI therapy. Follow up in 6 weeks. Referred to GI for colonoscopy evaluation."
+  expected_verdict: FAIL
+
+- failure_mode_id: SCRIBE-002
+  name: no_overlap_PASS
+  inputs:
+    prior_context: "Assessment: Stable GERD. Plan: Continue PPI therapy. Follow up in 6 weeks."
+    agent_output: "Assessment: GERD improving. Colonoscopy completed with normal results. Plan: Discontinue PPI. Follow up in 3 months."
+  expected_verdict: PASS
+
+- failure_mode_id: SCRIBE-004
+  name: negation_flip_FAIL
+  inputs:
+    transcript: "Patient denies chest pain. Patient denies shortness of breath. Reports headache."
+    agent_output: "ROS: Positive for chest pain and shortness of breath. Denies headache."
+  expected_verdict: FAIL
+
+- failure_mode_id: SCRIBE-004
+  name: correct_negation_PASS
+  inputs:
+    transcript: "Patient denies chest pain. Reports headache for two weeks."
+    agent_output: "ROS: Denies chest pain. Positive for headache x 2 weeks."
+  expected_verdict: PASS
+
+- failure_mode_id: RCM-001
+  name: invalid_cpt_FAIL
+  inputs:
+    agent_output: "Recommended codes: 99215, 93000, 99999"
+  expected_verdict: FAIL
+
+- failure_mode_id: RCM-001
+  name: valid_cpt_PASS
+  inputs:
+    agent_output: "Recommended codes: 99215, 93000"
+  expected_verdict: PASS
+
+- failure_mode_id: RCM-001
+  name: no_codes_UNCERTAIN
+  inputs:
+    agent_output: "Unable to determine appropriate codes without complete documentation."
+  expected_verdict: UNCERTAIN
+
+- failure_mode_id: RCM-002
+  name: fabricated_carc_FAIL
+  inputs:
+    remittance_data: "Adjustment reason: CO-4. Remark code: N130."
+    agent_output: "Denial reason CO-50 medical necessity not established. Submit clinical documentation."
+  expected_verdict: FAIL
+
+- failure_mode_id: RCM-002
+  name: correct_carc_PASS
+  inputs:
+    remittance_data: "Adjustment reason: CO-4."
+    agent_output: "Denial reason CO-4: service not covered by plan. Review benefit coverage before resubmission."
+  expected_verdict: PASS
+
+- failure_mode_id: REFILL-001
+  name: pa_required_not_disclosed_FAIL
+  inputs:
+    formulary_data: "Ozempic: prior authorization required under this plan."
+    agent_output: "Your Ozempic refill has been queued and will be ready in 24 hours."
+  expected_verdict: FAIL
+
+- failure_mode_id: REFILL-001
+  name: pa_disclosed_PASS
+  inputs:
+    formulary_data: "Ozempic: prior authorization required under this plan."
+    agent_output: "Ozempic requires prior authorization under your plan. I am flagging this for your care team."
+  expected_verdict: PASS
+
+- failure_mode_id: REFILL-002
+  name: schedule_ii_as_refill_FAIL
+  inputs:
+    medication_name: "Adderall XR 20mg"
+    dea_schedule: "II"
+    agent_output: "Your Adderall refill has been sent to the prescriber for approval."
+  expected_verdict: FAIL
+
+- failure_mode_id: REFILL-002
+  name: schedule_ii_correctly_handled_PASS
+  inputs:
+    medication_name: "Adderall XR 20mg"
+    dea_schedule: "II"
+    agent_output: "Adderall is a Schedule II controlled substance and cannot be refilled. A new prescription is required from your provider."
+  expected_verdict: PASS
+
+- failure_mode_id: FAXROUTE-001
+  name: ambiguous_no_flag_FAIL
+  inputs:
+    fax_metadata: "Attn: Dr. Johnson, Cardiology Associates"
+    provider_list: "Dr. Marcus Johnson - Interventional Cardiology\nDr. Patricia Johnson - Electrophysiology"
+    agent_output: "Routed to Dr. Patricia Johnson (Electrophysiology)."
+  expected_verdict: FAIL
+
+- failure_mode_id: FAXROUTE-001
+  name: ambiguous_flagged_PASS
+  inputs:
+    fax_metadata: "Attn: Dr. Johnson, Cardiology Associates"
+    provider_list: "Dr. Marcus Johnson - Interventional Cardiology\nDr. Patricia Johnson - Electrophysiology"
+    agent_output: "Ambiguous addressee — multiple providers match Dr. Johnson. Flagged for human verification."
+  expected_verdict: PASS
+
+- failure_mode_id: PRIORAUTH-001
+  name: fabricated_policy_number_FAIL
+  inputs:
+    policy_document: "Colonoscopy covered for average-risk members age 45 and older every 10 years. No PA required."
+    agent_output: "Prior authorization required per Humana Clinical Policy CP-GI-004. Submit failed sigmoidoscopy trial documentation."
+  expected_verdict: FAIL
+
+- failure_mode_id: PRIORAUTH-001
+  name: no_fabricated_refs_PASS
+  inputs:
+    policy_document: "Colonoscopy covered for average-risk members age 45 and older. No PA required."
+    agent_output: "Per payer policy, no prior authorization required for average-risk colonoscopy at age 45 or older."
+  expected_verdict: PASS
