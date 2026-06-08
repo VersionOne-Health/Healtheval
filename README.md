@@ -1,4 +1,4 @@
-# healtheval
+# Healtheval
 
 **An open-source library of failure modes and evaluation prompts for healthcare AI agents.**
 
